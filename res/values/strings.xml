@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">test</string>
+    <string name="current_version">current version:</string>
+    <string name="latest_version">latest version:</string>
+    <string name="firstly"> 1 .</string>
+    <string name="check_update">check update</string>
+    <string name="secondly">2 .</string>
+    <string name="download">download update</string>
+    <string name="thirdly">3 .</string>
+    <string name="run_update">update now</string>
+    <string name="not_need_update">your version is latest, need no update</string>
+    <string name="checking_update">checking update . . .</string>
+    <string name="download_over_toast">download complete </string>
+    <string name="download_title">OTA update</string>
+    <string name="download_description">Download file for OTA update</string>
+    <string name="read_me">------------------------------------\n
+        Notices: \n
+        1. need a SD card;\n
+        2. need a network conntection;(WLAN preferred)\n
+        3. maybe you need to reboot after download successly.\n
+        ------------------------------------\n</string> <!--  -->
+	
+	<string name="check_now">Check now</string>
+	<string name="scheduled_check">Scheduled check</string>
+	<string name="software_updates">Software updates</string>
+	<string name="later">Later</string>
+	<string name="ok">OK</string>
+	<string name="install">Install</string>
+	<string name="abandon">Abandon</string>
+	<string name="sync_failed">Sync failed!</string>
+	<string name="already_latest_version">This is already the latest version!</string>
+	<string name="checking">Checking...</string>
+	<string name="download_any_data">Download via any available data connection</string>
+	<string name="download_only_wifi">Download via Wi-Fi only</string>
+	<string name="version">Version:</string>
+	<string name="size">Size:%s bytes</string>
+	<string name="description">Description:</string>
+	<string name="network_not_avaliable">Network not avaliable!</string>
+</resources>

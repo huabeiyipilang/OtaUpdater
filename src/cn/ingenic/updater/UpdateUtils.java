@@ -1,0 +1,76 @@
+package cn.ingenic.updater;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.SystemProperties;
+import android.text.TextUtils;
+import android.util.Log;
+
+class UpdateUtils {
+    
+    static final String FILENAME_SAVED ="update_ingenic.zip";
+    static final String ENCODE="UTF-8";
+    static final int FLAG_CHECK_UPDATE=1;
+    static final int FLAG_DOWNLOAD_UPDATE=2;
+    /** the URL to check update
+     * */
+    static final String URL_TO_CHECK_UPDATE="http://bocaidong.sinaapp.com/tmp/update_list.xml";
+    static final String URL_TO_DOWNLOAD="http://www.baidu.com/index.php";
+    static final String ro_build_id = "ro.build.id";
+    static final String ro_build_display_id = "ro.build.display.id";
+    static final String ro_build_date_utc = "ro.build.date.utc";
+    static final String ro_product_model = "ro.product.model";
+    static final String ro_product_device = "ro.product.device";
+    static final String ro_product_platform = "ro.product.platform";
+    
+    private static final String PREFERENCE_NAME = "update_config";
+    private static final String CONFIG_DOWNLOAD_ID = "download_id";
+    
+    static String getCurrentVersion(){
+        return get("ro.build.display.id","unknow");
+    }
+
+    static String get(String key){
+        return SystemProperties.get(key);
+    }
+
+    static String get(String key, String def){
+        String value = SystemProperties.get(key);
+        if (TextUtils.isEmpty(value))
+            return def;
+        else
+            return value;
+    }
+    
+    public static void putDownloadId(Context context, long id){
+    	SharedPreferences pref= context.getSharedPreferences(PREFERENCE_NAME,0);
+    	SharedPreferences.Editor editor = pref.edit();
+    	editor.putLong(CONFIG_DOWNLOAD_ID, id);
+    	editor.commit();
+    }
+    
+    public static long getDownloadId(Context context){
+    	SharedPreferences pref= context.getSharedPreferences(PREFERENCE_NAME,0);
+    	return pref.getLong(CONFIG_DOWNLOAD_ID, 0);
+    }
+    
+    //:TODO
+    public static boolean isNeedUpdate(String newVersion, String oldVersion) {
+        return true;
+    }
+    
+    
+    static void logVer(){
+        String keys[]=new String[]{
+                ro_build_id,
+                ro_build_display_id,
+                ro_build_date_utc,
+                ro_product_model,
+                ro_product_device,
+                ro_product_platform,
+        };
+        for(String key: keys){
+            Log.i("dfdun", key+": "+get(key,"unknown"));
+        }
+    }
+}
