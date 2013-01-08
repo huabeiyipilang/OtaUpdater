@@ -12,9 +12,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
+            <TextView
+                android:id="@+id/update_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" 
+                android:text="@string/install_description" />
+
         </LinearLayout>
     </ScrollView>
-
+<TextView android:layout_width="match_parent"
+    	android:layout_height="1dip"
+    	android:background="#00ff00" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,21 +31,21 @@
         <Button
             android:id="@+id/abandon"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dip"
             android:layout_weight="1"
             android:text="@string/abandon" />
 
         <Button
             android:id="@+id/later"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dip"
             android:layout_weight="1"
             android:text="@string/later" />
 
         <Button
             android:id="@+id/install"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dip"
             android:layout_weight="1"
             android:text="@string/install" />
 

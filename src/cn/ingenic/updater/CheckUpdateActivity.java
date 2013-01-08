@@ -55,6 +55,7 @@ public class CheckUpdateActivity extends Activity implements OnClickListener {
 	private void showCheckingDialog(){
 		mWaitingDialog = new ProgressDialog(CheckUpdateActivity.this);
 		mWaitingDialog.setMessage(getResources().getString(R.string.checking));
+		mWaitingDialog.setCancelable(false);
 		mWaitingDialog.show();
 	}
 	

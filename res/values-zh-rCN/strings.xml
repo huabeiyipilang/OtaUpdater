@@ -24,10 +24,10 @@
 	<string name="check_now">立即检查</string>
 	<string name="scheduled_check">定时检查</string>
 	<string name="software_updates">软件更新</string>
-	<string name="later">稍后进行</string>
+	<string name="later">稍后安装</string>
 	<string name="ok">确定</string>
-	<string name="install">安装</string>
-	<string name="abandon">放弃</string>
+	<string name="install">立即安装</string>
+	<string name="abandon">放弃更新</string>
 	<string name="sync_failed">同步失败！</string>
 	<string name="already_latest_version">已经是最新版本！</string>
 	<string name="no_rollback_version">没有可回退的版本！</string>
@@ -48,5 +48,6 @@
 	
 	<!-- update install -->
 	<string name="install_alerting">升级过程中您无法使用电话，也不能拨打紧急电话。在升级过程中请勿关闭电话，或者取出电池或存储卡。</string>
-	
+    <string name="install_description">版本 \n 大小，\n更新内容</string>	
+    <string name ="update_later_msg">将在重启后进行升级</string>
 </resources>
