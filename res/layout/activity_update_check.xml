@@ -53,8 +53,7 @@
                     style="@style/InfomationText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
-                    android:text="TextView" />
+                    android:layout_weight="6" />
             </LinearLayout>
 
             <LinearLayout
@@ -75,8 +74,7 @@
                     style="@style/InfomationText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
-                    android:text="TextView" />
+                    android:layout_weight="6" />
             </LinearLayout>
 
             <LinearLayout
@@ -97,8 +95,7 @@
                     style="@style/InfomationText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
-                    android:text="TextView" />
+                    android:layout_weight="6" />
             </LinearLayout>
         </LinearLayout>
 
