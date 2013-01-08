@@ -24,6 +24,7 @@ public class UpdateDownloadActivity extends Activity implements OnClickListener 
 	
 	UpdateManager mManager;
 	UpdateInfo mInfo;
+	MyLog klilog = new MyLog(UpdateDownloadActivity.class);
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class UpdateDownloadActivity extends Activity implements OnClickListener 
 	    if(mode == 0 || mInfo == null){
 	    	return;
 	    }
+	    klilog.i(mInfo.toString());
 	    setupMode(mode);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append(getString(R.string.version)+mInfo.version);
@@ -111,7 +113,7 @@ public class UpdateDownloadActivity extends Activity implements OnClickListener 
         dwreq.setNotificationVisibility(Request.VISIBILITY_VISIBLE);       // «∑Ò‘⁄◊¥Ã¨¿∏œ‘ æ (0,1,2,3)
         
         long id = dm.enqueue(dwreq);
-        UpdateUtils.putDownloadId(this, id);
+        UpdateUtils.putDownloadInfo(this, id, mInfo);
     }
 
 }

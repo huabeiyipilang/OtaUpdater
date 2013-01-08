@@ -25,6 +25,7 @@ class UpdateUtils {
     
     private static final String PREFERENCE_NAME = "update_config";
     private static final String CONFIG_DOWNLOAD_ID = "download_id";
+    private static final String CONFIG_UPDATE_INFO = "update_info";
     
     static String getCurrentVersion(){
         return get("ro.build.display.id","unknow");
@@ -42,16 +43,22 @@ class UpdateUtils {
             return value;
     }
     
-    public static void putDownloadId(Context context, long id){
+    public static void putDownloadInfo(Context context, long id, UpdateInfo info){
     	SharedPreferences pref= context.getSharedPreferences(PREFERENCE_NAME,0);
     	SharedPreferences.Editor editor = pref.edit();
     	editor.putLong(CONFIG_DOWNLOAD_ID, id);
+    	editor.putString(CONFIG_UPDATE_INFO, info == null ? "" : info.toString());
     	editor.commit();
     }
     
     public static long getDownloadId(Context context){
     	SharedPreferences pref= context.getSharedPreferences(PREFERENCE_NAME,0);
     	return pref.getLong(CONFIG_DOWNLOAD_ID, 0);
+    }
+    
+    public static UpdateInfo getUpdateInfoCache(Context context){
+    	SharedPreferences pref= context.getSharedPreferences(PREFERENCE_NAME,0);
+    	return UpdateInfo.createFromString(pref.getString(CONFIG_UPDATE_INFO, ""));
     }
     
     //:TODO

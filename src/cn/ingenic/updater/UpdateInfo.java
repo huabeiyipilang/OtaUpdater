@@ -64,6 +64,64 @@ public class UpdateInfo implements Parcelable {
 		
 	};
 	
+	public String toString(){
+		StringBuilder builder = new StringBuilder();
+		builder.append(index+";");
+		builder.append(version+";");
+		builder.append(description+";");
+		builder.append(url+";");
+		builder.append(size+";");
+		
+		String next = "";
+		if(next_version != null){
+			for(int n : next_version){
+				next += n + ",";
+			}
+		}
+		builder.append(next+";");
+		
+		String pre = "";
+		if(pre_version != null){
+			for(int n : pre_version){
+				pre += n + ",";
+			}
+		}
+		builder.append(pre+";");
+		
+		return builder.toString();
+	}
+	
+	public static UpdateInfo createFromString(String s){
+		UpdateInfo info = new UpdateInfo();
+		String [] values = s.split(";");
+		int i = 0;
+			info.index = Integer.valueOf(values[i++]);
+			info.version = values[i++];
+			info.description = values[i++];
+			info.url = values[i++];
+			info.size = Integer.valueOf(values[i++]);
+			try {
+				info.next_version = arrayS2I(values[i++].split(","));
+				info.pre_version = arrayS2I(values[i++].split(","));
+			} catch (Exception e) {
+				info.next_version = null;
+				info.pre_version = null;
+				e.printStackTrace();
+			}
+		return info;
+	}
+	
+	private static int[] arrayS2I(String[] ss){
+		if(ss.length == 0){
+			return null;
+		}
+		int[] ii = new int[ss.length];
+		for(int n = 0; n < ii.length; n++){
+			ii[n] = Integer.valueOf(ss[n]);
+		}
+		return ii;
+	}
+	
 
 	public void dump(){
 		klilog.i("=========UpdateInfo===========");

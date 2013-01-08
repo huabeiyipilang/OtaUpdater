@@ -32,19 +32,21 @@ public class UpdateReceiver extends BroadcastReceiver {
 				int columnIndex = c
 						.getColumnIndex(DownloadManager.COLUMN_STATUS);
 				if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-					UpdateUtils.putDownloadId(context, 0);
 					String update_uri = c.getString(c
 									.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI));
-					showUpdateInstall(context, update_uri);
+					showUpdateInstall(context, update_uri, UpdateUtils.getUpdateInfoCache(context));
+					//wipe cache
+					UpdateUtils.putDownloadInfo(context, 0, null);
 				}
 			}
 		}
 	}
 
-	private void showUpdateInstall(Context context, String file) {
+	private void showUpdateInstall(Context context, String file, UpdateInfo info) {
 		Intent intent = new Intent(context, UpdateInstallActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra("update_file", file);
+		intent.putExtra("update_info", info);
 		context.startActivity(intent);
 	}
 
