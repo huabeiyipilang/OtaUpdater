@@ -53,7 +53,7 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
             mUpdateFile = new File(file_path.substring(file_path
                     .indexOf("/sdcard")));
             String update_size = "";
-            int size_kb = info.size / 1024;
+            int size_kb = Integer.valueOf(info.size) / 1024;
             if (size_kb < 1024)
                 update_size = size_kb + " KB";
             else

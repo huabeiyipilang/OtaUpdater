@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,6 +25,7 @@ public class UpdateInfoHelper {
 	private final static String VALUE_DESCRIPTION = "description";
 	private final static String VALUE_URL = "url";
 	private final static String VALUE_SIZE = "size";
+	private final static String VALUE_MD5 = "md5";
 	private final static String VALUE_NEXT = "next_version";
 	private final static String VALUE_PRE = "pre_version";
 	
@@ -100,7 +102,7 @@ public class UpdateInfoHelper {
 			String value = new String(ch, start, length);
 			if(VALUE_INDEX.equals(tmp)){
 				klilog.i("ch = "+ String.valueOf(ch)+"value = "+value);
-				info.index = Integer.valueOf(value);
+				info.index = value;
 			}else if(VALUE_VERSION.equals(tmp)){
 				info.version = value;
 			}else if(VALUE_DESCRIPTION.equals(tmp)){
@@ -108,11 +110,13 @@ public class UpdateInfoHelper {
 			}else if(VALUE_URL.equals(tmp)){
 				info.url = value;
 			}else if(VALUE_SIZE.equals(tmp)){
-				info.size = Integer.valueOf(value);
+				info.size = value;
+			}else if(VALUE_MD5.equals(tmp)){
+				info.md5 = value;
 			}else if(VALUE_NEXT.equals(tmp)){
-				info.next_version = s2i(value.split(","));
+				info.next_version = new ArrayList<String>(Arrays.asList(value.split(",")));
 			}else if(VALUE_PRE.equals(tmp)){
-				info.pre_version = s2i(value.split(","));
+				info.pre_version = new ArrayList<String>(Arrays.asList(value.split(",")));
 			}
 		}
 		

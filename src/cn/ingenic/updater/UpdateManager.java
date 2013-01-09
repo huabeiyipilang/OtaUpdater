@@ -71,7 +71,7 @@ public class UpdateManager {
 		UpdateInfo next = null;
 		UpdateInfo current = getCurrentVersion();
 		if (current != null && current.next_version != null) {
-			int next_index = current.next_version[current.next_version.length - 1];
+			String next_index = current.next_version.get(current.next_version.size() - 1);
 			next = getInfoByIndex(next_index);
 		}
 		return next;
@@ -81,29 +81,29 @@ public class UpdateManager {
 		UpdateInfo pre = null;
 		UpdateInfo current = getCurrentVersion();
 		if(current != null && current.pre_version != null){
-			int pre_index = current.pre_version[0];
+			String pre_index = current.pre_version.get(0);
 			pre = getInfoByIndex(pre_index);
 		}
 		return pre;
 	}
 	
 	private UpdateInfo getCurrentVersion(){
-		int current_index = getCurrentIndex();
+		String current_index = getCurrentIndex();
 		return getInfoByIndex(current_index);
 	}
 	
-	private UpdateInfo getInfoByIndex(int index){
+	private UpdateInfo getInfoByIndex(String index){
 		UpdateInfo update_info = null;
 		for(UpdateInfo info:mUpdateInfoList){
-			if(info.index == index){
+			if(info.index.equals(index)){
 				update_info = info;
 			}
 		}
 		return update_info;
 	}
 	
-	private int getCurrentIndex(){
-		return 2;
+	private String getCurrentIndex(){
+		return "2";
 	}
 	
 	private void onSyncSuccess(){

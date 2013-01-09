@@ -1,16 +1,20 @@
 package cn.ingenic.updater;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class UpdateInfo implements Parcelable {
-	public int index;
+	public String index;
 	public String version;
 	public String description;
 	public String url;
-	public int size;
-	public int[] next_version;
-	public int[] pre_version;
+	public String size;
+	public String md5;
+	public ArrayList<String> next_version = new ArrayList<String>();
+	public ArrayList<String> pre_version = new ArrayList<String>();
 	
 	private MyLog klilog = new MyLog(UpdateInfo.class);
 	
@@ -19,35 +23,31 @@ public class UpdateInfo implements Parcelable {
 	}
 	
 	private UpdateInfo(Parcel in){
-		index = in.readInt();
+		index = in.readString();
 		version = in.readString();
 		description = in.readString();
 		url = in.readString();
-		size = in.readInt();
-		try {
-			in.readIntArray(next_version);
-		} catch (NullPointerException e) {
-			next_version = null;
-		}
-		try {
-			in.readIntArray(pre_version);
-		} catch (NullPointerException e) {
-			pre_version = null;
-		}
+		size = in.readString();
+		md5 = in.readString();
+		next_version = (ArrayList<String>) in.readSerializable();
+		pre_version = (ArrayList<String>) in.readSerializable();
 	}
+	
 	@Override
 	public int describeContents() {
 		return 0;
 	}
+	
 	@Override
 	public void writeToParcel(Parcel out, int arg1) {
-		out.writeInt(index);
+		out.writeString(index);
 		out.writeString(version);
 		out.writeString(description);
 		out.writeString(url);
-		out.writeInt(size);
-		out.writeIntArray(next_version);
-		out.writeIntArray(pre_version);
+		out.writeString(size);
+		out.writeString(md5);
+		out.writeSerializable(next_version);
+		out.writeSerializable(pre_version);
 	}
 	
 	public static final Parcelable.Creator<UpdateInfo> CREATOR = new Parcelable.Creator<UpdateInfo>(){
@@ -71,21 +71,18 @@ public class UpdateInfo implements Parcelable {
 		builder.append(description+";");
 		builder.append(url+";");
 		builder.append(size+";");
+		builder.append(md5+";");
 		
 		String next = "";
-		if(next_version != null){
-			for(int n : next_version){
+			for(String n : next_version){
 				next += n + ",";
 			}
-		}
 		builder.append(next+";");
 		
 		String pre = "";
-		if(pre_version != null){
-			for(int n : pre_version){
+			for(String n : pre_version){
 				pre += n + ",";
 			}
-		}
 		builder.append(pre+";");
 		
 		return builder.toString();
@@ -95,42 +92,32 @@ public class UpdateInfo implements Parcelable {
 		UpdateInfo info = new UpdateInfo();
 		String [] values = s.split(";");
 		int i = 0;
-			info.index = Integer.valueOf(values[i++]);
+			info.index = values[i++];
 			info.version = values[i++];
 			info.description = values[i++];
 			info.url = values[i++];
-			info.size = Integer.valueOf(values[i++]);
+			info.size = values[i++];
+			info.md5 = values[i++];
 			try {
-				info.next_version = arrayS2I(values[i++].split(","));
-				info.pre_version = arrayS2I(values[i++].split(","));
+				info.next_version = (ArrayList<String>) Arrays.asList(values[i++].split(","));
+				info.pre_version = (ArrayList<String>) Arrays.asList(values[i++].split(","));
 			} catch (Exception e) {
-				info.next_version = null;
-				info.pre_version = null;
+				info.next_version = new ArrayList<String>();
+				info.pre_version = new ArrayList<String>();
 				e.printStackTrace();
 			}
 		return info;
 	}
-	
-	private static int[] arrayS2I(String[] ss){
-		if(ss.length == 0){
-			return null;
-		}
-		int[] ii = new int[ss.length];
-		for(int n = 0; n < ii.length; n++){
-			ii[n] = Integer.valueOf(ss[n]);
-		}
-		return ii;
-	}
-	
 
 	public void dump(){
 		klilog.i("=========UpdateInfo===========");
-		klilog.i("index: 		"+index);
-		klilog.i("version: 		"+version);
-		klilog.i("description: 	"+description);
-		klilog.i("url: 			"+url);
-		klilog.i("size: 		"+size);
-		klilog.i("next_version: "+next_version);
-		klilog.i("pre_version: 	"+pre_version);
+		klilog.i("index			:"+index);
+		klilog.i("version		:"+version);
+		klilog.i("description	:"+description);
+		klilog.i("url			:"+url);
+		klilog.i("size			:"+size);
+		klilog.i("md5			:"+md5);
+		klilog.i("next_version	:"+next_version);
+		klilog.i("pre_version	:"+pre_version);
 	}
 }
