@@ -49,5 +49,5 @@
 	<!-- update install -->
 	<string name="install_alerting">升级过程中您无法使用电话，也不能拨打紧急电话。在升级过程中请勿关闭电话，或者取出电池或存储卡。</string>
     <string name="install_notices">更新前请备份数据(如，联系人，信息，通话记录等),并保证有足够的电量</string>	
-    <string name ="update_later_msg">将在重启后进行升级</string>
+    <string name ="update_later_msg">点击进入系统更新</string>
 </resources>

@@ -61,6 +61,18 @@ class UpdateUtils {
     	return UpdateInfo.createFromString(pref.getString(CONFIG_UPDATE_INFO, ""));
     }
     
+    public static void putStringToSP(Context con,String key, String value){
+        SharedPreferences pref=con.getSharedPreferences(PREFERENCE_NAME, 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+    
+    public static String getStringFromSP(Context con,String key){
+        SharedPreferences pref=con.getSharedPreferences(PREFERENCE_NAME, 0);
+        return pref.getString(key, " ");
+    }
+    
     //:TODO
     public static boolean isNeedUpdate(String newVersion, String oldVersion) {
         return true;
