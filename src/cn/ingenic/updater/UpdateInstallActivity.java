@@ -9,8 +9,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
-import android.util.Log;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,18 +16,20 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RecoverySystem;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class UpdateInstallActivity extends Activity implements OnClickListener {
 	private File mUpdateFile;
+	private UpdateInfo mUpdateInfo;
 	private TextView mText;
 	private String mUpdateDescription;
 	private boolean mSaveFile;
-	private boolean mClicked;
+	private int mClicked;
 	private NotificationManager mNotificationManager;
-	private static final String KEY_DESCRIPTION = "key_description";
 	private static final String NOTIFICATION_TAG="update_tag";
 	private static final int NOTIFICATION_ID = 102;
 	
@@ -43,51 +43,64 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
 	    findViewById(R.id.install).setOnClickListener(this);
 	    mText = (TextView)findViewById(R.id.update_info);
 	    mSaveFile = true;
-	    mClicked = false;
-        mUpdateDescription = "";
         Intent intent = getIntent();
         if (intent.getStringExtra("update_file") != null) {
             String file_path = getIntent().getStringExtra("update_file");
-            UpdateInfo info = (UpdateInfo) getIntent().getParcelableExtra(
+            mUpdateInfo = (UpdateInfo) getIntent().getParcelableExtra(
                     "update_info");
             mUpdateFile = new File(file_path.substring(file_path
                     .indexOf("/sdcard")));
-            String update_size = "";
-            int size_kb = Integer.valueOf(info.size) / 1024;
-            if (size_kb < 1024)
-                update_size = size_kb + " KB";
-            else
-                update_size = size_kb / 1024 + "MB";
-            mUpdateDescription = getString(R.string.version) + info.version
-                    + " ( " + update_size + " )\n"
-                    + getString(R.string.description) + info.description + "\n";
+            UpdateUtils.putStringToSP(this, "file_pa", file_path.substring(file_path
+                    .indexOf("/sdcard")));
         } else { // come from Notification 
-            mUpdateDescription = UpdateUtils.getStringFromSP(this, KEY_DESCRIPTION);
+            mUpdateInfo = UpdateUtils.getUpdateInfoCache(this);
+            mUpdateFile = new File(UpdateUtils.getStringFromSP(this, "file_pa"));
         }
+        String update_size = "";
+        int size_kb = Integer.parseInt(mUpdateInfo.size) / 1024;
+        if (size_kb < 1024)
+            update_size = size_kb + " KB";
+        else
+            update_size = size_kb / 1024 + " MB";
+        mUpdateDescription = getString(R.string.version) + mUpdateInfo.version
+                + " ( " + update_size + " )\n"
+                + getString(R.string.description) + mUpdateInfo.description + "\n";
         mText.setText(mUpdateDescription);
         
         mNotificationManager = (NotificationManager) getSystemService("notification");
 	}
 
 	@Override
+	public void onStart(){
+	    super.onStart();
+	    mClicked = 0;
+	}
+	
+	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
 		case R.id.abandon:
 		    mSaveFile = false;
-		    mClicked = true;
+		    mClicked = 1;
 		    mNotificationManager.cancel(NOTIFICATION_TAG,NOTIFICATION_ID);
 			break;
 		case R.id.later:
 		    mSaveFile = true;
-		    mClicked = true;
+		    mClicked = 2;
 		    updateLater();
 			break;
 		case R.id.install:
 		    mSaveFile = true;
-		    mClicked = true;
-			try {
-			    getMD5(mUpdateFile);
-				RecoverySystem.installPackage(this, mUpdateFile);
+		    mClicked = 3;
+            try {
+                String md5=getMD5(mUpdateFile);
+                if (mUpdateInfo.md5.equals(md5)) {
+                    Toast.makeText(this, "MD5 OK!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d("dfdun", "md5 error! Right is "+mUpdateInfo.md5+"\n ");
+                    Toast.makeText(this, "MD5 Error!", Toast.LENGTH_SHORT).show();
+                }
+                RecoverySystem.installPackage(this, mUpdateFile);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -102,9 +115,9 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
         if (!mSaveFile && mUpdateFile != null && mUpdateFile.exists()) {
             mUpdateFile.delete();
         }
-        if (!mClicked) {
+        if (mClicked == 0) {
             updateLater();
-        }
+        } 
     }
 
     private void updateLater() {
@@ -124,37 +137,46 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
         .setAutoCancel(false)
         .setOngoing(true);
         mNotificationManager.notify(NOTIFICATION_TAG,NOTIFICATION_ID,builder.getNotification());
-        UpdateUtils.putStringToSP(this, KEY_DESCRIPTION, mUpdateDescription);
+        UpdateUtils.putDownloadInfo(this, 0, mUpdateInfo);
 	}
     
     private String getMD5(File file){
+        int errorCode = 0;
         char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                 'a', 'b', 'c', 'd', 'e', 'f' };
         try {
             FileInputStream in = new FileInputStream(file);
+            errorCode = 10;
             FileChannel ch = in.getChannel();
+            errorCode = 20;
             MessageDigest md = MessageDigest.getInstance("MD5");
+            errorCode = 30;
             MappedByteBuffer bb = ch.map(FileChannel.MapMode.READ_ONLY, 0, file
                     .length());
+            errorCode = 40;
             md.update(bb);
+            errorCode = 50;
             byte updateBytes[] = md.digest();
+            errorCode = 60;
             int len = updateBytes.length;
             char myChar[] = new char[len * 2];
             int k = 0;
+            errorCode = 70;
             for (int i = 0; i < len; i++) {
                 byte b = updateBytes[i];
                 myChar[k++] = hexDigits[b >>> 4 & 0x0f];
                 myChar[k++] = hexDigits[b & 0x0f];
             }
+            errorCode = 80;
             in.close();
             ch.close();
-            String md5 = new String(myChar).toUpperCase(Locale.ENGLISH);
-            Log.d("dfdun", "MD5 = "+md5);
+            String md5 = new String(myChar);//.toUpperCase(Locale.ENGLISH);
+            Log.d("dfdun", "MD5 = " + md5);
             return md5;
         } catch (IOException e) {
-            Log.e("dfdun", "149:" + e.toString());
+            Log.e("dfdun",  e.toString() + "Error Code = " + errorCode);
         } catch (NoSuchAlgorithmException e) {
-            Log.e("dfdun", "151:" + e.toString());
+            Log.e("dfdun",  e.toString() + "Error Code = " + errorCode);
         }
         return "";
     }
