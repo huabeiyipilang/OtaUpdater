@@ -39,6 +39,9 @@
         <activity android:name="UpdateInstallActivity"
             android:theme="@android:style/Theme.Dialog">
         </activity>
+        <activity android:name="NoticesActivity"
+            android:theme="@android:style/Theme.Dialog">
+        </activity>
     </application>
 
 </manifest>

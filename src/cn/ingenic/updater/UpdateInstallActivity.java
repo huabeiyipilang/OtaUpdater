@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.RecoverySystem;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -105,7 +106,9 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
                     Toast.makeText(this, "MD5 OK!", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d("dfdun", "md5 error! Right is "+mUpdateInfo.md5+"\n ");
-                    Toast.makeText(this, "MD5 Error!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this,NoticesActivity.class);
+                    intent.putExtra("msg", getString(R.string.check_file_failed));
+                    startActivity(intent);
                 }
                 RecoverySystem.installPackage(this, mUpdateFile);
 			} catch (IOException e) {
@@ -125,6 +128,19 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
         if (mClicked == 0) {
             updateLater();
         } 
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.i("dfdun", "keyCode = "+keyCode);
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            finish();
+            //Intent intent = new Intent(this,NoticesActivity.class);
+            //intent.putExtra("msg", getString(R.string.exit_message));
+            startActivity(new Intent(this,NoticesActivity.class));
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     private void updateLater() {

@@ -25,7 +25,8 @@
 	<string name="scheduled_check">定时检查</string>
 	<string name="software_updates">软件更新</string>
 	<string name="later">稍后安装</string>
-	<string name="ok">确定</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
 	<string name="install">立即安装</string>
 	<string name="abandon">放弃更新</string>
 	<string name="sync_failed">同步失败！</string>
@@ -50,4 +51,7 @@
 	<string name="install_alerting">升级过程中您无法使用电话，也不能拨打紧急电话。在升级过程中请勿关闭电话，或者取出电池或存储卡。</string>
     <string name="install_notices">更新前请备份数据(如，联系人，信息，通话记录等),并保证有足够的电量</string>	
     <string name ="update_later_msg">点击进入系统更新</string>
+    <string name ="exit_title">稍后更新</string>
+    <string name ="exit_message">您可以随时从通知栏进入更新</string>
+    <string name ="check_file_failed">文件校验失败，请重新下载</string>
 </resources>
