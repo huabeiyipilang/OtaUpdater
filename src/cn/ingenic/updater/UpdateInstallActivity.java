@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 /**
@@ -46,7 +47,6 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.activity_update_install);
 	    findViewById(R.id.abandon).setOnClickListener(this);
-	    findViewById(R.id.later).setOnClickListener(this);
 	    findViewById(R.id.install).setOnClickListener(this);
 	    mText = (TextView)findViewById(R.id.update_info);
 	    mSaveFile = true;
@@ -92,29 +92,31 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
 		    mClicked = 1;
 		    mNotificationManager.cancel(NOTIFICATION_TAG,NOTIFICATION_ID);
 			break;
-		case R.id.later:
-		    mSaveFile = true;
-		    mClicked = 2;
-		    updateLater();
-			break;
 		case R.id.install:
 		    mSaveFile = true;
 		    mClicked = 3;
-            try {
-                String md5=getMD5(mUpdateFile);
-                if (mUpdateInfo.md5.equals(md5)) {
-                    Toast.makeText(this, "MD5 OK!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d("dfdun", "md5 error! Right is "+mUpdateInfo.md5+"\n ");
-                    Intent intent = new Intent(this,NoticesActivity.class);
-                    intent.putExtra("msg", getString(R.string.check_file_failed));
-                    startActivity(intent);
+            if (((RadioButton) findViewById(R.id.install_now)).isChecked()){
+                try {
+                    String md5 = getMD5(mUpdateFile);
+                    if (mUpdateInfo.md5.equals(md5)) {
+                        Toast.makeText(this, "MD5 OK!", Toast.LENGTH_SHORT)
+                                .show();
+                    } else {
+                        Log.d("dfdun", "md5 error! Right is " + mUpdateInfo.md5
+                                + "\n ");
+                        Intent intent = new Intent(this, NoticesActivity.class);
+                        intent.putExtra("msg",
+                                getString(R.string.check_file_failed));
+                        startActivity(intent);
+                    }
+                    RecoverySystem.installPackage(this, mUpdateFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                RecoverySystem.installPackage(this, mUpdateFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
+            } else {
+                updateLater();
+            }
+            break;
 		}
 		this.finish();
 	}

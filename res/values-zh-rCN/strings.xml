@@ -28,7 +28,7 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
 	<string name="install">立即安装</string>
-	<string name="abandon">放弃更新</string>
+	<string name="abandon">放弃</string>
 	<string name="sync_failed">同步失败！</string>
 	<string name="already_latest_version">已经是最新版本！</string>
 	<string name="no_rollback_version">没有可回退的版本！</string>
