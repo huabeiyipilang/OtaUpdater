@@ -21,7 +21,7 @@ public class NoticesActivity extends Activity {
         Intent intent= getIntent();
         String msg = intent.getStringExtra("msg");
         if (msg != null)
-            tv.setText(msg);
+            tv.setText(msg+"\n");
         
     }
 
