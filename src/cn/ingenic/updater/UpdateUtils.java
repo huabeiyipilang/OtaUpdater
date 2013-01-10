@@ -16,7 +16,6 @@ class UpdateUtils {
      * */
     static final String URL_PRODUCTS_UPDATE="http://bocaidong.sinaapp.com/tmp/update_products_list.xml";
     static final String URL_TO_CHECK_UPDATE="http://bocaidong.sinaapp.com/tmp/update_list.xml";
-    static final String URL_TO_DOWNLOAD="http://www.baidu.com/index.php";
     static final String ro_build_id = "ro.build.id";
     static final String ro_build_display_id = "ro.build.display.id";
     static final String ro_build_date_utc = "ro.build.date.utc";

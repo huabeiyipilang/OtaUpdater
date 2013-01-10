@@ -15,13 +15,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.RecoverySystem;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
-
+/**
+ *  A activity dialog, to display update description,AND
+ *  1, abandon this update (will delete the file of update)
+ *  2, update later (add a notification, so can start update anytime)
+ *  3, update now   (install update now, it will reboot now)
+ */
 public class UpdateInstallActivity extends Activity implements OnClickListener {
 	private File mUpdateFile;
 	private UpdateInfo mUpdateInfo;
@@ -43,15 +49,16 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
 	    findViewById(R.id.install).setOnClickListener(this);
 	    mText = (TextView)findViewById(R.id.update_info);
 	    mSaveFile = true;
+        String sd_path = Environment.getExternalStorageDirectory().getPath();
         Intent intent = getIntent();
         if (intent.getStringExtra("update_file") != null) {
             String file_path = getIntent().getStringExtra("update_file");
             mUpdateInfo = (UpdateInfo) getIntent().getParcelableExtra(
                     "update_info");
             mUpdateFile = new File(file_path.substring(file_path
-                    .indexOf("/sdcard")));
+                    .indexOf(sd_path)));
             UpdateUtils.putStringToSP(this, "file_pa", file_path.substring(file_path
-                    .indexOf("/sdcard")));
+                    .indexOf(sd_path)));
         } else { // come from Notification 
             mUpdateInfo = UpdateUtils.getUpdateInfoCache(this);
             mUpdateFile = new File(UpdateUtils.getStringFromSP(this, "file_pa"));
@@ -66,7 +73,7 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
                 + " ( " + update_size + " )\n"
                 + getString(R.string.description) + mUpdateInfo.description + "\n";
         mText.setText(mUpdateDescription);
-        
+        Log.d("dfdun", "sd_path = " + sd_path);
         mNotificationManager = (NotificationManager) getSystemService("notification");
 	}
 
@@ -170,8 +177,8 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
             errorCode = 80;
             in.close();
             ch.close();
-            String md5 = new String(myChar);//.toUpperCase(Locale.ENGLISH);
-            Log.d("dfdun", "MD5 = " + md5);
+            String md5 = new String(myChar).toUpperCase(Locale.ENGLISH);
+            Log.d("dfdun", "MD5 of download = " + md5);
             return md5;
         } catch (IOException e) {
             Log.e("dfdun",  e.toString() + "Error Code = " + errorCode);
