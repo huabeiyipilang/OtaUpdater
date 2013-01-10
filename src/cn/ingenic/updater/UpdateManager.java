@@ -1,7 +1,9 @@
 package cn.ingenic.updater;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -44,7 +46,7 @@ public class UpdateManager {
 	}
 	
 	public int checkUpdate(){
-		if(mUpdateInfoList == null || mUpdateInfoList.size() == 0){
+		if(mUpdateInfoList == null){
 			return CHECK_FAILED;
 		}
 		UpdateInfo next = getNextVersion();
@@ -56,7 +58,7 @@ public class UpdateManager {
 	}
 	
 	public int checkRollback(){
-		if(mUpdateInfoList == null || mUpdateInfoList.size() == 0){
+		if(mUpdateInfoList == null){
 			return CHECK_FAILED;
 		}
 		UpdateInfo pre = getPreVersion();
@@ -130,7 +132,15 @@ public class UpdateManager {
 		
 		@Override
 		protected Object doInBackground(Object... arg0) {
-			return SyncData();
+			String url = getUpdateUrl();
+			if(url == null){
+				return SYNC_FAIL;
+			}else if(url == ""){
+				mUpdateInfoList = new ArrayList<UpdateInfo>();
+				return SYNC_SUCCESS;
+			}else{
+				return SyncData(url);
+			}
 		}
 
 		@Override
@@ -143,9 +153,38 @@ public class UpdateManager {
 			callback.sendToTarget();
 		}
 
-		private int SyncData() {
+		private String getUpdateUrl(){
+			String url = null;
+			HttpGet getMethod = new HttpGet(UpdateUtils.URL_PRODUCTS_UPDATE);
+			HttpClient httpClient = new DefaultHttpClient();
+			List<ProductInfo> productList = new ArrayList<ProductInfo>();
+			try {
+				HttpResponse response = httpClient.execute(getMethod);
+				String result = EntityUtils.toString(response.getEntity(),
+						UpdateUtils.ENCODE);
+				if (200 == response.getStatusLine().getStatusCode()) {
+					productList = ProductInfoHelper.getInstance().getProductList(result);
+					String this_model = android.os.Build.MODEL.toLowerCase(Locale.getDefault()).trim();
+					for(ProductInfo info : productList){
+						String model = info.model.toLowerCase(Locale.getDefault()).trim();
+						if(this_model.equals(model)){
+							url = info.url;
+							return url;
+						}
+					}
+					return "";
+				}
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null; 
+		}
+		
+		private int SyncData(String syncUrl) {
 			int res = SYNC_SUCCESS;
-			HttpGet getMethod = new HttpGet(UpdateUtils.URL_TO_CHECK_UPDATE);
+			HttpGet getMethod = new HttpGet(syncUrl);
 			HttpClient httpClient = new DefaultHttpClient();
 			try {
 				HttpResponse response = httpClient.execute(getMethod); // ·¢ÆðGETÇëÇó

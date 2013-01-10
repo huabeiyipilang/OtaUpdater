@@ -17,39 +17,31 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class UpdateInfoHelper {
-	private final static String LIST_VERSION = "update_list_version";
-	private final static String UPDATE_ELEMENT = "update";
-	private final static String VALUE_INDEX = "index";
-	private final static String VALUE_VERSION = "version";
-	private final static String VALUE_DESCRIPTION = "description";
+public class ProductInfoHelper {
+	private final static String PRODUCT_ELEMENT = "product";
+	private final static String VALUE_MODEL = "model";
 	private final static String VALUE_URL = "url";
-	private final static String VALUE_SIZE = "size";
-	private final static String VALUE_MD5 = "md5";
-	private final static String VALUE_NEXT = "next_version";
-	private final static String VALUE_PRE = "pre_version";
+	private static ProductInfoHelper sHelper;
+	private static MyLog klilog = new MyLog(ProductInfoHelper.class);
 	
-	private static UpdateInfoHelper sHelper;
-	private static MyLog klilog = new MyLog(UpdateInfoHelper.class);
-	
-	private UpdateInfoHelper(){
+	private ProductInfoHelper(){
 		
 	}
 	
-	public static UpdateInfoHelper getInstance(){
+	public static ProductInfoHelper getInstance(){
 		if(sHelper == null){
-			sHelper = new UpdateInfoHelper();
+			sHelper = new ProductInfoHelper();
 		}
 		return sHelper;
 	}
 	
-	public List<UpdateInfo> getUpdateList(String xml){
+	public List<ProductInfo> getProductList(String xml){
 		ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
-		return getUpdateList(stream);
+		return getProductList(stream);
 	}
 	
-	public List<UpdateInfo> getUpdateList(InputStream is){
-		List<UpdateInfo> res = new ArrayList<UpdateInfo>();
+	public List<ProductInfo> getProductList(InputStream is){
+		List<ProductInfo> res = new ArrayList<ProductInfo>();
 		SAXParserFactory saxParser = SAXParserFactory.newInstance();
 		try {
 			SAXParser sp = saxParser.newSAXParser();
@@ -68,18 +60,18 @@ public class UpdateInfoHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(UpdateInfo info:res){
+		for(ProductInfo info:res){
 			info.dump();
 		}
 		return res;
 	}
 	
 	private class XmlHandler extends DefaultHandler{
-		private List<UpdateInfo> list = new ArrayList<UpdateInfo>();
-		private UpdateInfo info;
+		private List<ProductInfo> list = new ArrayList<ProductInfo>();
+		private ProductInfo info;
 		private String tmp;
 		
-		public XmlHandler(List<UpdateInfo> list){
+		public XmlHandler(List<ProductInfo> list){
 			this.list = list;
 		}
 		
@@ -87,8 +79,8 @@ public class UpdateInfoHelper {
 		public void startElement(String uri, String localName,
 				String qName, Attributes attributes)
 				throws SAXException {
-			if(UPDATE_ELEMENT.equals(localName)){
-				info = new UpdateInfo();
+			if(PRODUCT_ELEMENT.equals(localName)){
+				info = new ProductInfo();
 			}
 			tmp = localName;
 		}
@@ -100,36 +92,23 @@ public class UpdateInfoHelper {
 				return;
 			}
 			String value = new String(ch, start, length);
-			if(VALUE_INDEX.equals(tmp)){
-				klilog.i("ch = "+ String.valueOf(ch)+"value = "+value);
-				info.index = value;
-			}else if(VALUE_VERSION.equals(tmp)){
-				info.version = value;
-			}else if(VALUE_DESCRIPTION.equals(tmp)){
-				info.description = value;
+			if(VALUE_MODEL.equals(tmp)){
+				info.model = value;
 			}else if(VALUE_URL.equals(tmp)){
 				info.url = value;
-			}else if(VALUE_SIZE.equals(tmp)){
-				info.size = value;
-			}else if(VALUE_MD5.equals(tmp)){
-				info.md5 = value;
-			}else if(VALUE_NEXT.equals(tmp)){
-				info.next_version = new ArrayList<String>(Arrays.asList(value.split(",")));
-			}else if(VALUE_PRE.equals(tmp)){
-				info.pre_version = new ArrayList<String>(Arrays.asList(value.split(",")));
 			}
 		}
 		
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
-			if(UPDATE_ELEMENT.equals(localName)){
+			if(PRODUCT_ELEMENT.equals(localName)){
 				list.add(info);
 			}
 			tmp = null;
 		}
 		
-		public List<UpdateInfo> getUpdateList(){
+		public List<ProductInfo> getUpdateList(){
 			return list;
 		}
 
