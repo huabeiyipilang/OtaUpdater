@@ -39,4 +39,8 @@
 	<string name="description">Description:</string>
 	<string name="network_not_avaliable">Network not avaliable!</string>
 	<string name="install_description">version \n file size\n what is new</string>	
+	<string name="update_to_version">Update to Version:%s</string>
+	<string name="rollback_to_version">Rollback to Version:%s</string>
+	<string name="current_version_ps">(Current version)</string>
+	<string name="please_choose_version">Please choose a version.</string>
 </resources>

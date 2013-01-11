@@ -19,69 +19,79 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class UpdateInfoHelper {
 	private final static String LIST_VERSION = "update_list_version";
+	
+	private final static String VERSION_LIST_ELEMENT = "version_list";
+	private final static String VALUE_VERSION = "version";
+	
 	private final static String UPDATE_ELEMENT = "update";
 	private final static String VALUE_INDEX = "index";
-	private final static String VALUE_VERSION = "version";
+	private final static String VALUE_VERSION_FROM = "version_from";
+	private final static String VALUE_VERSION_TO = "version_to";
 	private final static String VALUE_DESCRIPTION = "description";
 	private final static String VALUE_URL = "url";
 	private final static String VALUE_SIZE = "size";
 	private final static String VALUE_MD5 = "md5";
-	private final static String VALUE_NEXT = "next_version";
-	private final static String VALUE_PRE = "pre_version";
 	
-	private static UpdateInfoHelper sHelper;
 	private static MyLog klilog = new MyLog(UpdateInfoHelper.class);
 	
-	private UpdateInfoHelper(){
-		
+	private List<UpdateInfo> mUpdateList;
+	private List<String> mVersionList;
+	public UpdateInfoHelper(String xml){
+		parse(xml);
 	}
 	
-	public static UpdateInfoHelper getInstance(){
-		if(sHelper == null){
-			sHelper = new UpdateInfoHelper();
-		}
-		return sHelper;
+	public UpdateInfoHelper(InputStream is){
+		parse(is);
 	}
 	
-	public List<UpdateInfo> getUpdateList(String xml){
+	public List<UpdateInfo> getUpdateList(){
+		return mUpdateList;
+	}
+	
+	public List<String> getVersionList(){
+		return mVersionList;
+	}
+	
+	private boolean parse(String xml){
 		ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
-		return getUpdateList(stream);
+		return parse(stream);
 	}
 	
-	public List<UpdateInfo> getUpdateList(InputStream is){
-		List<UpdateInfo> res = new ArrayList<UpdateInfo>();
+	private boolean parse(InputStream is){
+		boolean res = false;
 		SAXParserFactory saxParser = SAXParserFactory.newInstance();
 		try {
 			SAXParser sp = saxParser.newSAXParser();
 			XMLReader reader = sp.getXMLReader();
-			XmlHandler handler = new XmlHandler(res); 
+			XmlHandler handler = new XmlHandler(); 
 			reader.setContentHandler(handler);
 			reader.parse(new InputSource(is));
-			res = handler.getUpdateList();
+			mUpdateList = handler.update_list;
+			mVersionList = handler.version_list;
+			klilog.i("=========version list===========");
+			for(String ver : mVersionList){
+				klilog.i(ver);
+			}
+			for(UpdateInfo info:mUpdateList){
+				info.dump();
+			}
+			res = true;
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		for(UpdateInfo info:res){
-			info.dump();
 		}
 		return res;
 	}
 	
 	private class XmlHandler extends DefaultHandler{
-		private List<UpdateInfo> list = new ArrayList<UpdateInfo>();
+		private List<UpdateInfo> update_list = new ArrayList<UpdateInfo>();
+		private List<String> version_list = new ArrayList<String>();
 		private UpdateInfo info;
+		private String version;
 		private String tmp;
-		
-		public XmlHandler(List<UpdateInfo> list){
-			this.list = list;
-		}
 		
 		@Override
 		public void startElement(String uri, String localName,
@@ -96,41 +106,38 @@ public class UpdateInfoHelper {
 		@Override
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
-			if(info == null){
-				return;
-			}
 			String value = new String(ch, start, length);
-			if(VALUE_INDEX.equals(tmp)){
-				klilog.i("ch = "+ String.valueOf(ch)+"value = "+value);
-				info.index = value;
-			}else if(VALUE_VERSION.equals(tmp)){
-				info.version = value;
-			}else if(VALUE_DESCRIPTION.equals(tmp)){
-				info.description = value;
-			}else if(VALUE_URL.equals(tmp)){
-				info.url = value;
-			}else if(VALUE_SIZE.equals(tmp)){
-				info.size = value;
-			}else if(VALUE_MD5.equals(tmp)){
-				info.md5 = value;
-			}else if(VALUE_NEXT.equals(tmp)){
-				info.next_version = new ArrayList<String>(Arrays.asList(value.split(",")));
-			}else if(VALUE_PRE.equals(tmp)){
-				info.pre_version = new ArrayList<String>(Arrays.asList(value.split(",")));
+			if (VALUE_VERSION.equals(tmp)) {
+				version = value;
+			} else if (info != null) {
+				if (VALUE_INDEX.equals(tmp)) {
+					info.index = value;
+				} else if (VALUE_VERSION_FROM.equals(tmp)) {
+					info.version_from = value;
+				} else if (VALUE_VERSION_TO.equals(tmp)) {
+					info.version_to = value;
+				} else if (VALUE_DESCRIPTION.equals(tmp)) {
+					info.description = value;
+				} else if (VALUE_URL.equals(tmp)) {
+					info.url = value;
+				} else if (VALUE_SIZE.equals(tmp)) {
+					info.size = value;
+				} else if (VALUE_MD5.equals(tmp)) {
+					info.md5 = value;
+				}
 			}
+
 		}
 		
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
 			if(UPDATE_ELEMENT.equals(localName)){
-				list.add(info);
+				update_list.add(info);
+			}else if(VALUE_VERSION.equals(localName)){
+				version_list.add(version);
 			}
 			tmp = null;
-		}
-		
-		public List<UpdateInfo> getUpdateList(){
-			return list;
 		}
 
 	}

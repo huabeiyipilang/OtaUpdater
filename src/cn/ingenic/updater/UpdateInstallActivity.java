@@ -70,7 +70,7 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
             update_size = size_kb + " KB";
         else
             update_size = size_kb / 1024 + " MB";
-        mUpdateDescription = getString(R.string.version) + mUpdateInfo.version
+        mUpdateDescription = getString(R.string.version) + mUpdateInfo.version_to
                 + " ( " + update_size + " )\n"
                 + getString(R.string.description) + mUpdateInfo.description + "\n";
         mText.setText(mUpdateDescription);

@@ -2,6 +2,8 @@ package cn.ingenic.updater;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,8 +30,17 @@ public class UpdateManager {
 	
 	private static UpdateManager sInstance = null;
 	private Context mContext;
-	private List<UpdateInfo> mUpdateInfoList;
-	
+	private List<UpdateInfo> mUpdateList;
+	private List<String> mVersionList;
+	private Comparator mComparator = new Comparator() {
+		@Override
+		public int compare(Object l, Object r) {
+			// 如果左值l比右值r大，交换位置。
+			return mVersionList.indexOf(l) - mVersionList.indexOf(r);
+		}
+	};
+
+    
 	private UpdateManager(Context context){
 		mContext = context;
 	}
@@ -46,11 +57,13 @@ public class UpdateManager {
 	}
 	
 	public int checkUpdate(){
-		if(mUpdateInfoList == null){
+		if(mUpdateList == null){
 			return CHECK_FAILED;
 		}
-		UpdateInfo next = getNextVersion();
-		if(next != null){
+		List<String> list = getVersionListBaseCurrent();
+		String version = getCurrentVersion();
+		int pos = list.indexOf(version);
+		if(pos < list.size() - 1){
 			return CHECK_HAS_UPDATE;
 		}else{
 			return CHECK_NO_UPDATE;
@@ -58,69 +71,62 @@ public class UpdateManager {
 	}
 	
 	public int checkRollback(){
-		if(mUpdateInfoList == null){
+		if(mUpdateList == null){
 			return CHECK_FAILED;
 		}
-		UpdateInfo pre = getPreVersion();
-		if(pre != null){
+		List<String> list = getVersionListBaseCurrent();
+		String version = getCurrentVersion();
+		int pos = list.indexOf(version);
+		if(pos > 0){
 			return CHECK_HAS_ROLLBACK;
 		}else{
 			return CHECK_NO_ROLLBACK;
 		}
 	}
 	
-	public UpdateInfo getNextVersion(){
-		UpdateInfo next = null;
-		UpdateInfo current = getCurrentVersion();
-		if (current != null && current.next_version != null) {
-			String next_index = current.next_version.get(current.next_version.size() - 1);
-			next = getInfoByIndex(next_index);
+	public List<String> getVersionListBaseCurrent(){
+		List<String> list = new ArrayList<String>();
+		String currentVersion = getCurrentVersion();
+		list.add(currentVersion);
+		for(UpdateInfo info:mUpdateList){
+			if(currentVersion.equals(info.version_from)){
+				list.add(info.version_to);
+			}
+			/*
+			if(currentVersion.equals(info.version_to)){
+				list.add(info.version_from);
+			}*/
 		}
-		return next;
+		Collections.sort(list, mComparator);
+		return list;
 	}
 	
-	public UpdateInfo getPreVersion(){
-		UpdateInfo pre = null;
-		UpdateInfo current = getCurrentVersion();
-		if(current != null && current.pre_version != null){
-			String pre_index = current.pre_version.get(0);
-			pre = getInfoByIndex(pre_index);
+	public UpdateInfo getUpdateInfoTo(String version){
+		String currentVersion = getCurrentVersion();
+		UpdateInfo update_info = null;
+		for(UpdateInfo info:mUpdateList){
+			if(info.version_from.equals(currentVersion) &&
+					info.version_to.equals(version)){
+				update_info = info;
+				break;
+			}
 		}
-		return pre;
+		return update_info;
 	}
 	
-	private UpdateInfo getCurrentVersion(){
-		String current_index = getCurrentIndex();
-		return getInfoByIndex(current_index);
+	public String getCurrentVersion(){
+		return "2.1.1";
 	}
 	
 	private UpdateInfo getInfoByIndex(String index){
 		UpdateInfo update_info = null;
-		for(UpdateInfo info:mUpdateInfoList){
+		for(UpdateInfo info:mUpdateList){
 			if(info.index.equals(index)){
 				update_info = info;
 			}
 		}
 		return update_info;
 	}
-	
-	private String getCurrentIndex(){
-		return "2";
-	}
-	
-	private void onSyncSuccess(){
-		/*
-		try {
-			InputStream is = mContext.getResources().getAssets().open("update_list2.xml");
-			mUpdateInfoList = UpdateInfoHelper.getInstance().getUpdateList(is);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext,
-					R.string.sync_failed, Toast.LENGTH_SHORT).show();
-		}
-		*/
-	}
-
 
 	private class SyncDataTask extends AsyncTask {
 		
@@ -136,7 +142,7 @@ public class UpdateManager {
 			if(url == null){
 				return SYNC_FAIL;
 			}else if(url == ""){
-				mUpdateInfoList = new ArrayList<UpdateInfo>();
+				mUpdateList = new ArrayList<UpdateInfo>();
 				return SYNC_SUCCESS;
 			}else{
 				return SyncData(url);
@@ -146,9 +152,6 @@ public class UpdateManager {
 		@Override
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
-			if((Integer)result == SYNC_SUCCESS){
-				onSyncSuccess();
-			}
 			callback.arg1 = (Integer) result;
 			callback.sendToTarget();
 		}
@@ -191,7 +194,9 @@ public class UpdateManager {
 				String result = EntityUtils.toString(response.getEntity(),
 						UpdateUtils.ENCODE);
 				if (200 == response.getStatusLine().getStatusCode()) { // 获取响应码
-					mUpdateInfoList = UpdateInfoHelper.getInstance().getUpdateList(result);
+					UpdateInfoHelper helper = new UpdateInfoHelper(result);
+					mVersionList = helper.getVersionList();
+					mUpdateList = helper.getUpdateList();
 				}else{
 					res = SYNC_FAIL;
 				}
