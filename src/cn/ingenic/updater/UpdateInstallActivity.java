@@ -101,15 +101,17 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
                     if (mUpdateInfo.md5.equals(md5)) {
                         Toast.makeText(this, "MD5 OK!", Toast.LENGTH_SHORT)
                                 .show();
+                        RecoverySystem.installPackage(this, mUpdateFile);
                     } else {
                         Log.d("dfdun", "md5 error! Right is " + mUpdateInfo.md5
                                 + "\n ");
+                        mNotificationManager.cancel(NOTIFICATION_TAG,NOTIFICATION_ID);
+                        mSaveFile = false;
                         Intent intent = new Intent(this, NoticesActivity.class);
                         intent.putExtra("msg",
                                 getString(R.string.check_file_failed));
                         startActivity(intent);
                     }
-                    RecoverySystem.installPackage(this, mUpdateFile);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
