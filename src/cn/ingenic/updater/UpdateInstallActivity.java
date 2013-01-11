@@ -131,7 +131,7 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
             updateLater();
         } 
     }
-
+/*
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.i("dfdun", "keyCode = "+keyCode);
@@ -144,7 +144,7 @@ public class UpdateInstallActivity extends Activity implements OnClickListener {
         }
         return super.onKeyUp(keyCode, event);
     }
-
+*/
     private void updateLater() {
         long when = System.currentTimeMillis();
         CharSequence contentTitle = getText(R.string.app_name);
