@@ -111,7 +111,7 @@ public class CheckUpdateActivity extends Activity implements OnClickListener, On
 		TextView system_version = (TextView)findViewById(R.id.tv_system_version);
 		product.setText(android.os.Build.MODEL);
 		android_version.setText(android.os.Build.VERSION.RELEASE);
-		system_version.setText("");
+		system_version.setText(android.os.Build.DISPLAY);
 	}
 	
 	private void onSyncFinished(Message msg){

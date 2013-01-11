@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Message;
 
 public class UpdateManager {
+	private MyLog klilog = new MyLog(this.getClass());
 	public static final int SYNC_SUCCESS = 1;
 	public static final int SYNC_FAIL = 2;
 
@@ -175,6 +176,7 @@ public class UpdateManager {
 							return url;
 						}
 					}
+					klilog.w("Products not in products list!");
 					return "";
 				}
 			} catch (ClientProtocolException e) {
@@ -193,11 +195,13 @@ public class UpdateManager {
 				HttpResponse response = httpClient.execute(getMethod); // 发起GET请求
 				String result = EntityUtils.toString(response.getEntity(),
 						UpdateUtils.ENCODE);
-				if (200 == response.getStatusLine().getStatusCode()) { // 获取响应码
+				int code = response.getStatusLine().getStatusCode();
+				if (200 == code) { // 获取响应码
 					UpdateInfoHelper helper = new UpdateInfoHelper(result);
 					mVersionList = helper.getVersionList();
 					mUpdateList = helper.getUpdateList();
 				}else{
+					klilog.e("Http response error, code:" + code);
 					res = SYNC_FAIL;
 				}
 			} catch (ClientProtocolException e) {
