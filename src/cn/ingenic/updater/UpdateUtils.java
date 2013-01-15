@@ -8,7 +8,7 @@ import android.util.Log;
 
 class UpdateUtils {
     
-    static final String FILENAME_SAVED ="update_ingenic.zip";
+    static final String FILENAME_SAVED ="../update.zip";
     static final String ENCODE="UTF-8";
     static final int FLAG_CHECK_UPDATE=1;
     static final int FLAG_DOWNLOAD_UPDATE=2;
