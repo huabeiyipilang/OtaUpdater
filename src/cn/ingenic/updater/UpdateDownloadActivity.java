@@ -1,10 +1,11 @@
 package cn.ingenic.updater;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -97,20 +98,24 @@ public class UpdateDownloadActivity extends Activity implements OnClickListener 
 	}
 	
 	private void download(String url){
+	    File f = new File("/storage/sdcard0/update.zip");
+        if (f.exists()) {
+            f.delete();
+        }
         DownloadManager dm=((DownloadManager)getSystemService("download"));
         Uri uri = Uri.parse(url);
         Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS).mkdirs();
         Request dwreq = new DownloadManager.Request(uri);
-        //下载时状态栏的提示标题
         dwreq.setTitle(getString(R.string.download_title));
-        //下载时状态栏的提示描述
         dwreq.setDescription(getString(R.string.download_description));
 
+        String filename = ""; // :TODO  now it is flash dir
+        filename = "../update.zip";
         dwreq.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOWNLOADS,  //保存的文件路径
-                UpdateUtils.FILENAME_SAVED);     //保存的文件名字
-        dwreq.setNotificationVisibility(Request.VISIBILITY_VISIBLE);       //是否在状态栏显示 (0,1,2,3)
+                Environment.DIRECTORY_DOWNLOADS,
+                filename);
+        dwreq.setNotificationVisibility(Request.VISIBILITY_VISIBLE);
         
         long id = dm.enqueue(dwreq);
         UpdateUtils.putDownloadInfo(this, id, mInfo);

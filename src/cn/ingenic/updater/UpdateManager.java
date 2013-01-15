@@ -36,7 +36,7 @@ public class UpdateManager {
 	private Comparator mComparator = new Comparator() {
 		@Override
 		public int compare(Object l, Object r) {
-			// 如果左值l比右值r大，交换位置。
+			// if l > r , swap them
 			return mVersionList.indexOf(l) - mVersionList.indexOf(r);
 		}
 	};
@@ -192,11 +192,11 @@ public class UpdateManager {
 			HttpGet getMethod = new HttpGet(syncUrl);
 			HttpClient httpClient = new DefaultHttpClient();
 			try {
-				HttpResponse response = httpClient.execute(getMethod); // 发起GET请求
+				HttpResponse response = httpClient.execute(getMethod);
 				String result = EntityUtils.toString(response.getEntity(),
 						UpdateUtils.ENCODE);
 				int code = response.getStatusLine().getStatusCode();
-				if (200 == code) { // 获取响应码
+				if (200 == code) { // get code of httpresponse
 					UpdateInfoHelper helper = new UpdateInfoHelper(result);
 					mVersionList = helper.getVersionList();
 					mUpdateList = helper.getUpdateList();
