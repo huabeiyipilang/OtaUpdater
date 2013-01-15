@@ -13,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.SystemProperties;
 import android.util.Log;
 
 public class UpdateReceiver extends BroadcastReceiver {
@@ -38,7 +39,8 @@ public class UpdateReceiver extends BroadcastReceiver {
 				int columnIndex = c
 						.getColumnIndex(DownloadManager.COLUMN_STATUS);
 				if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-				    cpFile();//:TODO cp file from /flash to /sdcard
+                    if (SystemProperties.get("ro.build.version.release").startsWith("4.1"))
+                        cpFile();// :TODO cp file from /flash to /sdcard
 					String update_uri = c.getString(c
 									.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI));
 					showUpdateInstall(context, update_uri, UpdateUtils.getUpdateInfoCache(context));
