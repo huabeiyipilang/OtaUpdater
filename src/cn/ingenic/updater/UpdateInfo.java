@@ -74,10 +74,11 @@ public class UpdateInfo implements Parcelable {
 		return builder.toString();
 	}
 	
-	public static UpdateInfo createFromString(String s){
+	public static UpdateInfo createFromString(String s) {
 		UpdateInfo info = new UpdateInfo();
-		String [] values = s.split(";");
+		String[] values = s.split(";");
 		int i = 0;
+		try {
 			info.index = values[i++];
 			info.version_from = values[i++];
 			info.version_to = values[i++];
@@ -85,6 +86,10 @@ public class UpdateInfo implements Parcelable {
 			info.url = values[i++];
 			info.size = values[i++];
 			info.md5 = values[i++];
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return info;
 	}
 
